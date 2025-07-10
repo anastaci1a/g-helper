@@ -100,9 +100,11 @@ namespace GHelper.Input
             }
 
             InitBacklightTimer();
+        }
 
+        public static void InitFNLock()
+        {
             if (AppConfig.IsHardwareFnLock()) HardwareFnLock(AppConfig.Is("fn_lock"));
-
         }
 
         public void InitBacklightTimer()
@@ -749,10 +751,16 @@ namespace GHelper.Input
 
         }
 
+        static int GetTentState()
+        {
+            var tentState = Program.acpi.DeviceGet(AsusACPI.TentState);
+            Logger.WriteLine($"Tent: {tentState}");
+            return tentState;
+        }
+
         public static void TentMode()
         {
-            int tentState = Program.acpi.DeviceGet(AsusACPI.TentState);
-            Logger.WriteLine($"Tent: {tentState}");
+            var tentState = GetTentState();
             if (tentState < 0) return;
             tentMode = tentState > 0;
             Aura.ApplyBrightness(tentMode ? 0 : GetBacklight(), "Tent");
@@ -968,8 +976,12 @@ namespace GHelper.Input
 
             if (tentMode)
             {
-                Logger.WriteLine("Skipping Backlight Init: Tent Mode");
-                return;
+                tentMode = GetTentState() > 0; 
+                if (tentMode)
+                {
+                    Logger.WriteLine("Skipping Backlight Init: Tent Mode");
+                    return;
+                }
             }
 
             if (!AppConfig.Is("skip_aura"))
@@ -986,7 +998,6 @@ namespace GHelper.Input
         public static void SetBacklightAuto(bool init = false)
         {
             if (lidClose || tentMode) return;
-            if (init) Aura.Init();
             Aura.ApplyBrightness(GetBacklight(), "Auto", init);
         }
 
