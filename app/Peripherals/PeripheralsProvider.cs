@@ -214,6 +214,8 @@ namespace GHelper.Peripherals
             DetectMouse(new HarpeAceAimLabEditionWired());
             DetectMouse(new HarpeAceExtremeWeird());
             DetectMouse(new HarpeAceMiniWired());
+            DetectMouse(new HarpeIIAceWireless());
+            DetectMouse(new HarpeIIAceWired());
             DetectMouse(new TUFM3());
             DetectMouse(new TUFM3GenII());
             DetectMouse(new TUFM5());
@@ -264,9 +266,11 @@ namespace GHelper.Peripherals
 
                     AsusMouse omniMouse = signatureStr switch
                     {
+                        var s when s.StartsWith("B241226660") => new HarpeAceMiniOmni(),                // B24122666061
                         var s when s.StartsWith("B23") => new HarpeAceAimLabEditionOmni(),              // B23072800062
                         var s when s.StartsWith("B241") => new HarpeAceAimLabEditionOmni(),             // B24122666771
                         var s when s.StartsWith("B2501") => new HarpeAceAimLabEditionOmni(),            // B25010476524
+                        var s when s.StartsWith("S7") => new HarpeAceMiniOmni(),                        // S7MPKR053847
                         var s when s.StartsWith("B24") => new HarpeAceMiniOmni(),                       // B24082550833
                         var s when s.StartsWith("B25") => new HarpeAceMiniOmni(),                       // B25030817186
                         var s when s.StartsWith("R1") => new KerisWirelssAimpointOmni(),                // R13121351391
@@ -282,7 +286,7 @@ namespace GHelper.Peripherals
                         var s when s.StartsWith("R903") => new GladiusIIIAimpointOmni(),                // R90319215881
                         var s when s.StartsWith("R923") => new GladiusIIIAimpointOmni(),                // R92307410710
                         var s when s.StartsWith("R9") => new KerisWirelssAimpointOmni(),                // R90518300572
-                        var s when s.StartsWith("T5") => new HarpeAceExtremeOmni(),                      // T5MPKR018406
+                        var s when s.StartsWith("T5") => new HarpeAceExtremeOmni(),                     // T5MPKR018406
                         _ => new HarpeAceAimLabEditionOmni()
                     };
 

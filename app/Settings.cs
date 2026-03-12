@@ -149,6 +149,14 @@ namespace GHelper
             buttonEnergySaver.ForeColor = SystemColors.ControlLightLight;
             buttonEnergySaver.Click += ButtonEnergySaver_Click;
 
+            buttonAmdOled.BackColor = colorTurbo;
+            buttonAmdOled.ForeColor = SystemColors.ControlLightLight;
+            buttonAmdOled.Click += ButtonAmdOled_Click;
+
+            buttonArmoury.BackColor = colorTurbo;
+            buttonArmoury.ForeColor = SystemColors.ControlLightLight;
+            buttonArmoury.Click += ButtonArmoury_Click;
+
             buttonSilent.Click += ButtonSilent_Click;
             buttonBalanced.Click += ButtonBalanced_Click;
             buttonTurbo.Click += ButtonTurbo_Click;
@@ -289,6 +297,19 @@ namespace GHelper
 
             panelPerformance.Focus();
             InitVisual();
+        }
+
+        private void ButtonArmoury_Click(object? sender, EventArgs e)
+        {
+            var dialogResult = MessageBox.Show(this, "Armoury Crate is active, download official uninstaller app?", "Armoury Crate", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes) AsusService.RunArmouryUninstaller();
+        }
+
+
+        private void ButtonAmdOled_Click(object? sender, EventArgs e)
+        {
+            AmdDisplay.RunAdrenaline();
+            activateCheck = true;
         }
 
         private void LabelBattery_Click(object? sender, EventArgs e)
@@ -495,6 +516,22 @@ namespace GHelper
             });
         }
 
+        public void VisualiseAmdOled(bool status = false)
+        {
+            Invoke(delegate
+            {
+                buttonAmdOled.Visible = status;
+            });
+        }
+
+        public void VisualiseArmoury(bool status = false)
+        {
+            Invoke(delegate
+            {
+                buttonArmoury.Visible = status;
+            });
+        }
+
         public void VisualiseDisabled()
         {
             comboGamut.Enabled = comboColorTemp.Enabled = (SplendidCommand)AppConfig.Get("visual") != SplendidCommand.Disabled;
@@ -604,6 +641,7 @@ namespace GHelper
             if (activateCheck)
             {
                 buttonEnergySaver.Visible = PowerNative.GetBatterySaverStatus();
+                buttonAmdOled.Visible = AmdDisplay.IsOledPowerOptimization();
                 activateCheck = false;
             }
         }
@@ -836,15 +874,20 @@ namespace GHelper
             //contextMenuStrip.ShowCheckMargin = true;
             contextMenuStrip.RenderMode = ToolStripRenderMode.System;
 
-            if (darkTheme)
-            {
-                contextMenuStrip.BackColor = this.BackColor;
-                contextMenuStrip.ForeColor = this.ForeColor;
-            }
+            InitContextMenuTheme();
 
             if (Program.trayIcon is not null) Program.trayIcon.ContextMenuStrip = contextMenuStrip;
 
 
+        }
+
+        public void InitContextMenuTheme()
+        {
+            if (contextMenuStrip is not null)
+            {
+                contextMenuStrip.BackColor = this.BackColor;
+                contextMenuStrip.ForeColor = this.ForeColor;
+            }
         }
 
         private void ButtonXGM_Click(object? sender, EventArgs e)
@@ -1907,11 +1950,11 @@ namespace GHelper
                 switch (m.DeviceType())
                 {
                     case PeripheralType.Mouse:
-                        b.Image = ControlHelper.TintImage(Properties.Resources.icons8_maus_32, b.ForeColor);
+                        b.Image = ControlHelper.ResizeImage(ControlHelper.TintImage(Properties.Resources.icons8_maus_48, b.ForeColor), ControlHelper.Scale);
                         break;
 
                     case PeripheralType.Keyboard:
-                        b.Image = ControlHelper.TintImage(Properties.Resources.icons8_keyboard_32, b.ForeColor);
+                        b.Image = ControlHelper.ResizeImage(ControlHelper.TintImage(Properties.Resources.icons8_keyboard_32, b.ForeColor), ControlHelper.Scale);
                         break;
                 }
 
