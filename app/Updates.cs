@@ -1,8 +1,6 @@
 ﻿using GHelper.Helpers;
 using GHelper.UI;
-using NvAPIWrapper.Native.Display.Structures;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Management;
 using System.Net;
 using System.Text.Json;
@@ -24,6 +22,7 @@ namespace GHelper
 
         private readonly Font _boldUnderlineFont;
         private readonly Font _font;
+        private CancellationTokenSource _cts = new();
 
         public struct DriverDownload
         {
@@ -77,12 +76,12 @@ namespace GHelper
             Task.Run(async () =>
             {
                 DriversAsync($"https://rog.asus.com/support/webapi/product/GetPDBIOS?website=global&model={model}&cpu={model}{rogParam}", 1, tableBios);
-            });
+            }, _cts.Token);
 
             Task.Run(async () =>
             {
                 DriversAsync($"https://rog.asus.com/support/webapi/product/GetPDDrivers?website=global&model={model}&cpu={model}&osid=52{rogParam}", 0, tableDrivers);
-            });
+            }, _cts.Token);
 
             Task.Run(async () =>
             {
@@ -101,6 +100,7 @@ namespace GHelper
             }
 
             tableLayoutPanel.RowCount = 0;
+            tableLayoutPanel.RowStyles.Clear();
         }
 
         public Updates()
@@ -117,6 +117,8 @@ namespace GHelper
 
             FormClosed += (s, e) =>
             {
+                _cts.Cancel();
+                _cts.Dispose();
                 // Dispose fonts when form closes
                 _boldUnderlineFont.Dispose();
                 _font.Dispose();
@@ -160,7 +162,7 @@ namespace GHelper
                 {
                     Dictionary<string, string> list = new();
 
-                    foreach (ManagementObject obj in objCollection) if (obj["DriverVersion"] is not null)
+                    foreach (ManagementObject obj in objCollection) using (obj) if (obj["DriverVersion"] is not null)
                         {
                             if (obj["DeviceID"] is not null)
                             {
@@ -376,7 +378,7 @@ namespace GHelper
                         int newer = DRIVER_NOT_FOUND;
                         string tip = driver.version;
 
-                        if (type == 0 && driver.hardwares.ToString().Length > 0)
+                        if (type == 0 && driver.hardwares.GetArrayLength() > 0)
                             for (int k = 0; k < driver.hardwares.GetArrayLength(); k++)
                             {
                                 var deviceID = driver.hardwares[k].GetProperty("hardwareid").ToString();

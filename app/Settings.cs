@@ -243,7 +243,7 @@ namespace GHelper
 
             sensorTimer = new System.Timers.Timer(AppConfig.Get("sensor_timer", 1000));
             sensorTimer.Elapsed += OnTimedEvent;
-            sensorTimer.Enabled = true;
+            sensorTimer.Enabled = false;
 
             labelCharge.MouseEnter += PanelBattery_MouseEnter;
             labelCharge.MouseLeave += PanelBattery_MouseLeave;
@@ -775,6 +775,7 @@ namespace GHelper
                         case 0:
                             Logger.WriteLine("Monitor Power Off");
                             Aura.SleepBrightness();
+                            Program.modeControl.SleepReset();
                             break;
                         case 1:
                             Logger.WriteLine("Monitor Power On");
@@ -1208,7 +1209,7 @@ namespace GHelper
             pictureColor2.BackColor = Aura.Color2;
             pictureColor2.Visible = Aura.HasSecondColor();
 
-            bool dynamic = AppConfig.IsDynamicLighting() && DynamicLightingHelper.IsEnabled();
+            bool dynamic = AppConfig.IsDynamicLighting() && DynamicLightingHelper.IsEnabled() && !AppConfig.IsDynamicLightingOnly();
 
             if (dynamic)
             {
@@ -1840,18 +1841,16 @@ namespace GHelper
             int GPUMode = AppConfig.Get("gpu_mode");
             bool isDark = CheckSystemDarkModeStatus();
 
-            switch (GPUMode)
+            Icon newIcon = GPUMode switch
             {
-                case AsusACPI.GPUModeEco:
-                    Program.trayIcon.Icon = AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_eco : Properties.Resources.light_eco) : Properties.Resources.eco;
-                    break;
-                case AsusACPI.GPUModeUltimate:
-                    Program.trayIcon.Icon = AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_standard : Properties.Resources.light_standard) : Properties.Resources.ultimate;
-                    break;
-                default:
-                    Program.trayIcon.Icon = AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_standard : Properties.Resources.light_standard) : Properties.Resources.standard;
-                    break;
-            }
+                AsusACPI.GPUModeEco => AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_eco : Properties.Resources.light_eco) : Properties.Resources.eco,
+                AsusACPI.GPUModeUltimate => AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_standard : Properties.Resources.light_standard) : Properties.Resources.ultimate,
+                _ => AppConfig.IsBWIcon() ? (!isDark ? Properties.Resources.dark_standard : Properties.Resources.light_standard) : Properties.Resources.standard,
+            };
+
+            Icon? oldIcon = Program.trayIcon.Icon;
+            Program.trayIcon.Icon = newIcon;
+            oldIcon?.Dispose();
         }
 
         private void ButtonSilent_Click(object? sender, EventArgs e)
