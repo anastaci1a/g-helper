@@ -13,7 +13,7 @@ Small and lightweight Armoury Crate alternative for Asus laptops offering almost
 <a href="https://github.com/seerge/g-helper/releases/latest/download/GHelper.exe" alt="G-Helper - Lightweight control tool for Asus laptops"><img width="1280" alt="G-Helper - Lightweight control tool for Asus laptops" src="https://raw.githubusercontent.com/seerge/g-helper/refs/heads/main/docs/app-hero.jpg" /></a>
 
 
-<a href="https://github.com/seerge/g-helper/releases/latest/download/GHelper.exe"><img width="250" alt="Download" src="https://g-helper.com/button/download.svg?lang=en" /></a> &nbsp; <a href="https://g-helper.com/support"><img width="250" alt="Donate" src="https://g-helper.com/button/donate.svg?lang=en" /></a>
+<a href="https://github.com/anastaci1a/g-helper/releases/latest/download/GHelper.exe"><img width="250" alt="Download" src="https://g-helper.com/button/download.svg?lang=en" /></a> &nbsp; <a href="https://g-helper.com/support"><img width="250" alt="Donate" src="https://g-helper.com/button/donate.svg?lang=en" /></a>
 
 **⭐ Like the app? Help spread the word.**
 
