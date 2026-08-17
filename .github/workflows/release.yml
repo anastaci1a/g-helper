@@ -17,7 +17,7 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '10.0.x'
 
     - name: Publish
       run: |
@@ -28,4 +28,4 @@ jobs:
         GH_TOKEN: ${{ github.token }}
         RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
       run: |
-        gh release upload "$env:RELEASE_TAG" "app/bin/x64/Release/net8.0-windows/win-x64/publish/GHelper.exe" --clobber
+        gh release upload "$env:RELEASE_TAG" "app/bin/x64/Release/net10.0-windows/win-x64/publish/GHelper.exe" --clobber
