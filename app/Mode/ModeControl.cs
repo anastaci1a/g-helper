@@ -47,6 +47,7 @@ namespace GHelper.Mode
         static System.Timers.Timer? reapplyTimer;
         static System.Timers.Timer modeToggleTimer = default!;
         static CancellationTokenSource _modeCts = new();
+        static Task _modeTask = Task.CompletedTask;
 
         public ModeControl()
         {
@@ -65,6 +66,12 @@ namespace GHelper.Mode
             return smu != null && smu.Family is CpuFamily.Renoir or CpuFamily.Mobile;
         }
 
+        private static bool IsReapplyRyzenRequired()
+        {
+            var smu = GetSmu();
+            return smu != null && smu.Family is CpuFamily.Raphael;
+        }
+
         private static void SetReapplyEnabled(bool enabled)
         {
             if (reapplyTimer != null) reapplyTimer.Enabled = enabled;
@@ -75,6 +82,11 @@ namespace GHelper.Mode
         {
             SetCPUTemp(AppConfig.GetMode("cpu_temp"));
             SetRyzenPower();
+        }
+
+        public void WaitForApply()
+        {
+            try { _modeTask.Wait(5000); } catch { }
         }
 
         public void AutoPerformance(bool powerChanged = false)
@@ -93,7 +105,7 @@ namespace GHelper.Mode
         {
             ResetRyzen();
 
-            Program.acpi.DeviceSet(AsusACPI.PerformanceMode, Modes.GetCurrentBase(), "Mode");
+            Program.acpi.SetPerformanceMode(Modes.GetCurrentBase());
 
             // Default power mode
             AppConfig.RemoveMode("powermode");
@@ -122,7 +134,7 @@ namespace GHelper.Mode
             _modeCts = new CancellationTokenSource();
             var ct = _modeCts.Token;
 
-            Task.Run(async () =>
+            _modeTask = Task.Run(async () =>
             {
                 try
                 {
@@ -143,9 +155,7 @@ namespace GHelper.Mode
                     ct.ThrowIfCancellationRequested();
 
                     if (AppConfig.Is("status_mode")) Program.acpi.DeviceSet(AsusACPI.StatusMode, [0x00, Modes.GetBase(mode) == AsusACPI.PerformanceSilent ? (byte)0x02 : (byte)0x03], "StatusMode");
-                    int status = Program.acpi.DeviceSet(AsusACPI.PerformanceMode, AppConfig.IsManualModeRequired() ? AsusACPI.PerformanceManual : Modes.GetBase(mode), "Mode");
-                    // Vivobook fallback
-                    if (status != 1) Program.acpi.SetVivoMode(Modes.GetBase(mode));
+                    Program.acpi.SetPerformanceMode(AppConfig.IsManualModeRequired() ? AsusACPI.PerformanceManual : Modes.GetBase(mode));
 
                     SetGPUClocks();
 
@@ -159,12 +169,16 @@ namespace GHelper.Mode
                     var command = AppConfig.GetModeString("mode_command");
                     if (command is not null)
                     {   Logger.WriteLine("Running mode command: " + command);
-                        RestrictedProcessHelper.RunAsRestrictedUser(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe"), "/C " + command);
+                        RestrictedProcessHelper.RunAsRestrictedUser(command);
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     Logger.WriteLine($"SetPerformanceMode cancelled (mode {mode})");
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLine($"SetPerformanceMode failed (mode {mode}): {ex.Message}");
                 }
             }, ct);
 
@@ -179,6 +193,7 @@ namespace GHelper.Mode
                     PowerNative.SetPowerMode(Modes.GetBase(mode));
 
                 if (AppConfig.IsAutoASPM()) PowerNative.SetBalancedASPM();
+                if (AppConfig.IsAutoStandbyNetworking()) PowerNative.SetConnectivityInStandby();
             }
 
             // CPU Boost setting override
@@ -296,9 +311,10 @@ namespace GHelper.Mode
 
             Thread.Sleep(500);
             SetGPUPower();
+            if (applyPower) SetCrossPower();
             AutoRyzen();
 
-            if (AppConfig.IsReapplyRyzen())
+            if (IsReapplyRyzenRequired())
                 Task.Delay(5000).ContinueWith(_ => { AutoRyzen(); ReadRyzenLimits(); });
 
         }
@@ -387,6 +403,22 @@ namespace GHelper.Mode
 
             SetModeLabel();
 
+        }
+
+        public void SetCrossPower()
+        {
+            int gpucpu = AppConfig.GetMode("limit_gpucpu");
+            int crossload = AppConfig.GetMode("limit_crossload");
+            int cputemp = AppConfig.GetMode("limit_cputemp");
+
+            if (gpucpu >= AsusACPI.MinGPUtoCPU && gpucpu <= AsusACPI.MaxGPUtoCPU && Program.acpi.IsSupported(AsusACPI.PPT_GPUCPU9C))
+                Program.acpi.DeviceSet(AsusACPI.PPT_GPUCPU9C, gpucpu, "PowerLimit 9C (GPU to CPU)");
+
+            if (crossload >= AsusACPI.MinCrossLoad && crossload <= AsusACPI.MaxCrossLoad && Program.acpi.IsSupported(AsusACPI.PPT_CROSS9F))
+                Program.acpi.DeviceSet(AsusACPI.PPT_CROSS9F, crossload, "PowerLimit 9F (Cross Loading)");
+
+            if (cputemp >= AsusACPI.MinCPUTemp && cputemp <= AsusACPI.MaxCPUTemp && Program.acpi.IsSupported(AsusACPI.PPT_TEMP9E))
+                Program.acpi.DeviceSet(AsusACPI.PPT_TEMP9E, cputemp, "PowerLimit 9E (CPU Temp)");
         }
 
         public void SetGPUClocks(bool launchAsAdmin = true, bool reset = false)
@@ -505,8 +537,24 @@ namespace GHelper.Mode
                 int cpuUV   = AppConfig.GetMode("cpu_uv",   0);
                 int igpuUV  = AppConfig.GetMode("igpu_uv",  0);
                 int cpuTemp = AppConfig.GetMode("cpu_temp");
+                string? cpuUVCores = AppConfig.GetModeString("cpu_uv_cores");
 
-                if (CpuInfo.IsSupportedUV() && cpuUV >= CpuInfo.MinCPUUV && cpuUV <= CpuInfo.MaxCPUUV)
+                if (CpuInfo.IsSupportedUV() && cpuUVCores is not null)
+                {
+                    int core = 0;
+                    foreach (var token in cpuUVCores.Split('-', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (int.TryParse(token, out int uv) && -uv >= CpuInfo.MinCPUUV && -uv <= CpuInfo.MaxCPUUV)
+                        {
+                            SmuStatus s = smu.SetCoPer(core, -uv);
+                            Logger.WriteLine($"UV core {core}: {-uv} {s}");
+                            if (s == SmuStatus.OK) _cpuUV = -uv;
+                        }
+                        core++;
+                    }
+                    lines.AppendLine($"CPU UV cores {cpuUVCores}");
+                }
+                else if (CpuInfo.IsSupportedUV() && cpuUV >= CpuInfo.MinCPUUV && cpuUV <= CpuInfo.MaxCPUUV)
                 {
                     SmuStatus s = smu.SetCoAll(cpuUV);
                     Logger.WriteLine($"UV: {cpuUV} {s}");

@@ -71,8 +71,7 @@ namespace GHelper
             labelMaxDPI = new Label();
             numericUpDownCurrentDPI = new RNumericUpDown();
             panelDPITile = new Panel();
-            pictureDPIColor = new PictureBox();
-            buttonDPIColor = new GHelper.UI.RButton();
+            buttonDPIColor = new GHelper.UI.RColorButton();
             labelDPI = new Label();
             tableDPI = new TableLayoutPanel();
             buttonDPI2 = new GHelper.UI.RButton();
@@ -96,8 +95,7 @@ namespace GHelper
             checkBoxSyncAura = new CheckBox();
             comboBoxAnimationSpeed = new GHelper.UI.RComboBox();
             labelAnimationSpeed = new Label();
-            pictureBoxLightingColor = new PictureBox();
-            buttonLightingColor = new GHelper.UI.RButton();
+            buttonLightingColor = new GHelper.UI.RColorButton();
             comboBoxLightingMode = new GHelper.UI.RComboBox();
             labelLightingMode = new Label();
             panelLightingHeader = new Panel();
@@ -132,6 +130,9 @@ namespace GHelper
             panelBindingsHeader = new Panel();
             pictureBindigs = new PictureBox();
             labelBindingsTitle = new Label();
+            tableBindingsNav = new TableLayoutPanel();
+            buttonBindingsNormal = new UI.RButton();
+            buttonBindingsShift = new UI.RButton();
             tableRoot = new TableLayoutPanel();
             panelProfiles.SuspendLayout();
             panelPerformance.SuspendLayout();
@@ -149,14 +150,12 @@ namespace GHelper
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownCurrentDPI).BeginInit();
             panelDPITile.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureDPIColor).BeginInit();
             tableDPI.SuspendLayout();
             panelPerformanceHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureKeyboard).BeginInit();
             panelLighting.SuspendLayout();
             panelLightingContent.SuspendLayout();
             tableLayoutLightingZones.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxLightingColor).BeginInit();
             panelLightingHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLighting).BeginInit();
             panelEnergy.SuspendLayout();
@@ -171,6 +170,7 @@ namespace GHelper
             panelLeft.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureMouseLayout).BeginInit();
             panelBindingsHeader.SuspendLayout();
+            tableBindingsNav.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBindigs).BeginInit();
             tableRoot.SuspendLayout();
             SuspendLayout();
@@ -704,7 +704,6 @@ namespace GHelper
             // 
             // panelDPITile
             // 
-            panelDPITile.Controls.Add(pictureDPIColor);
             panelDPITile.Controls.Add(buttonDPIColor);
             panelDPITile.Controls.Add(labelDPI);
             panelDPITile.Dock = DockStyle.Top;
@@ -714,19 +713,9 @@ namespace GHelper
             panelDPITile.Padding = new Padding(0, 6, 0, 6);
             panelDPITile.Size = new Size(872, 54);
             panelDPITile.TabIndex = 48;
-            // 
-            // pictureDPIColor
-            // 
-            pictureDPIColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pictureDPIColor.Location = new Point(822, 14);
-            pictureDPIColor.Margin = new Padding(8);
-            pictureDPIColor.Name = "pictureDPIColor";
-            pictureDPIColor.Size = new Size(20, 20);
-            pictureDPIColor.TabIndex = 46;
-            pictureDPIColor.TabStop = false;
-            // 
+            //
             // buttonDPIColor
-            // 
+            //
             buttonDPIColor.AccessibleName = "Keyboard Color";
             buttonDPIColor.Activated = false;
             buttonDPIColor.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
@@ -931,7 +920,6 @@ namespace GHelper
             panelLightingContent.Controls.Add(checkBoxRandomColor);
             panelLightingContent.Controls.Add(comboBoxAnimationSpeed);
             panelLightingContent.Controls.Add(labelAnimationSpeed);
-            panelLightingContent.Controls.Add(pictureBoxLightingColor);
             panelLightingContent.Controls.Add(buttonLightingColor);
             panelLightingContent.Controls.Add(comboBoxLightingMode);
             panelLightingContent.Controls.Add(labelLightingMode);
@@ -1151,19 +1139,9 @@ namespace GHelper
             labelAnimationSpeed.Size = new Size(422, 44);
             labelAnimationSpeed.TabIndex = 52;
             labelAnimationSpeed.Text = "Animation Speed";
-            // 
-            // pictureBoxLightingColor
-            // 
-            pictureBoxLightingColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pictureBoxLightingColor.Location = new Point(614, 158);
-            pictureBoxLightingColor.Margin = new Padding(8);
-            pictureBoxLightingColor.Name = "pictureBoxLightingColor";
-            pictureBoxLightingColor.Size = new Size(26, 26);
-            pictureBoxLightingColor.TabIndex = 50;
-            pictureBoxLightingColor.TabStop = false;
-            // 
+            //
             // buttonLightingColor
-            // 
+            //
             buttonLightingColor.AccessibleName = "Keyboard Color";
             buttonLightingColor.Activated = false;
             buttonLightingColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -1219,13 +1197,13 @@ namespace GHelper
             // 
             // sliderBrightness
             // 
-            sliderBrightness.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            sliderBrightness.Location = new Point(488, 2);
+            sliderBrightness.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            sliderBrightness.Location = new Point(488, 0);
             sliderBrightness.Margin = new Padding(2);
             sliderBrightness.Max = 100;
             sliderBrightness.Min = 0;
             sliderBrightness.Name = "sliderBrightness";
-            sliderBrightness.Size = new Size(378, 36);
+            sliderBrightness.Size = new Size(378, 40);
             sliderBrightness.Step = 1;
             sliderBrightness.TabIndex = 51;
             sliderBrightness.Text = "sliderBrightness";
@@ -1585,6 +1563,7 @@ namespace GHelper
             panelLeft.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             panelLeft.AutoSize = true;
             panelLeft.Controls.Add(pictureMouseLayout);
+            panelLeft.Controls.Add(tableBindingsNav);
             panelLeft.Controls.Add(panelGap);
             panelLeft.Controls.Add(panelBindingsHeader);
             panelLeft.Location = new Point(3, 3);
@@ -1646,7 +1625,61 @@ namespace GHelper
             labelBindingsTitle.Size = new Size(114, 32);
             labelBindingsTitle.TabIndex = 34;
             labelBindingsTitle.Text = "Bindings";
-            // 
+            //
+            // tableBindingsNav
+            //
+            tableBindingsNav.ColumnCount = 2;
+            tableBindingsNav.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableBindingsNav.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableBindingsNav.Controls.Add(buttonBindingsNormal, 0, 0);
+            tableBindingsNav.Controls.Add(buttonBindingsShift, 1, 0);
+            tableBindingsNav.Dock = DockStyle.Top;
+            tableBindingsNav.Location = new Point(10, 370);
+            tableBindingsNav.MinimumSize = new Size(0, 76);
+            tableBindingsNav.Name = "tableBindingsNav";
+            tableBindingsNav.Padding = new Padding(0, 0, 0, 18);
+            tableBindingsNav.RowCount = 1;
+            tableBindingsNav.RowStyles.Add(new RowStyle());
+            tableBindingsNav.Size = new Size(480, 76);
+            tableBindingsNav.TabIndex = 210;
+            tableBindingsNav.Visible = false;
+            //
+            // buttonBindingsNormal
+            //
+            buttonBindingsNormal.Activated = true;
+            buttonBindingsNormal.BackColor = SystemColors.ControlLight;
+            buttonBindingsNormal.BorderColor = Color.Transparent;
+            buttonBindingsNormal.BorderRadius = 2;
+            buttonBindingsNormal.Dock = DockStyle.Fill;
+            buttonBindingsNormal.FlatStyle = FlatStyle.Flat;
+            buttonBindingsNormal.Location = new Point(4, 5);
+            buttonBindingsNormal.Margin = new Padding(4, 2, 4, 2);
+            buttonBindingsNormal.Name = "buttonBindingsNormal";
+            buttonBindingsNormal.Secondary = false;
+            buttonBindingsNormal.Size = new Size(232, 58);
+            buttonBindingsNormal.TabIndex = 0;
+            buttonBindingsNormal.Text = "Buttons";
+            buttonBindingsNormal.UseVisualStyleBackColor = false;
+            buttonBindingsNormal.Click += ButtonBindingsNormal_Click;
+            //
+            // buttonBindingsShift
+            //
+            buttonBindingsShift.Activated = false;
+            buttonBindingsShift.BackColor = SystemColors.ControlLight;
+            buttonBindingsShift.BorderColor = Color.Transparent;
+            buttonBindingsShift.BorderRadius = 2;
+            buttonBindingsShift.Dock = DockStyle.Fill;
+            buttonBindingsShift.FlatStyle = FlatStyle.Flat;
+            buttonBindingsShift.Location = new Point(244, 5);
+            buttonBindingsShift.Margin = new Padding(4, 2, 4, 2);
+            buttonBindingsShift.Name = "buttonBindingsShift";
+            buttonBindingsShift.Secondary = true;
+            buttonBindingsShift.Size = new Size(232, 58);
+            buttonBindingsShift.TabIndex = 1;
+            buttonBindingsShift.Text = "SpeedShift";
+            buttonBindingsShift.UseVisualStyleBackColor = false;
+            buttonBindingsShift.Click += ButtonBindingsShift_Click;
+            //
             // tableRoot
             // 
             tableRoot.AutoSize = true;
@@ -1701,7 +1734,6 @@ namespace GHelper
             ((System.ComponentModel.ISupportInitialize)numericUpDownCurrentDPI).EndInit();
             panelDPITile.ResumeLayout(false);
             panelDPITile.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureDPIColor).EndInit();
             tableDPI.ResumeLayout(false);
             panelPerformanceHeader.ResumeLayout(false);
             panelPerformanceHeader.PerformLayout();
@@ -1712,7 +1744,6 @@ namespace GHelper
             panelLightingContent.PerformLayout();
             tableLayoutLightingZones.ResumeLayout(false);
             tableLayoutLightingZones.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBoxLightingColor).EndInit();
             panelLightingHeader.ResumeLayout(false);
             panelLightingHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxLighting).EndInit();
@@ -1730,6 +1761,7 @@ namespace GHelper
             panelRight.PerformLayout();
             panelLeft.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureMouseLayout).EndInit();
+            tableBindingsNav.ResumeLayout(false);
             panelBindingsHeader.ResumeLayout(false);
             panelBindingsHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBindigs).EndInit();
@@ -1767,22 +1799,19 @@ namespace GHelper
         private Label labelMinDPI;
         private Panel panelDPITile;
         private Label labelDPI;
-        private TableLayoutPanel tableLayoutPollingRate;
         private UI.RComboBox comboBoxPollingRate;
         private UI.Slider sliderAngleAdjustment;
         private CheckBox checkBoxAngleSnapping;
         private Panel panelPerformanceOther;
         private TableLayoutPanel tableLayoutProfiles;
-        private UI.RButton buttonDPIColor;
-        private PictureBox pictureDPIColor;
+        private UI.RColorButton buttonDPIColor;
         private UI.Slider sliderBrightness;
         private Label labelPollingRate;
         private Label labelAngleAdjustmentValue;
         private Panel panelLightingContent;
         private UI.RComboBox comboBoxLightingMode;
         private Label labelLightingMode;
-        private PictureBox pictureBoxLightingColor;
-        private UI.RButton buttonLightingColor;
+        private UI.RColorButton buttonLightingColor;
         private CheckBox checkBoxRandomColor;
         private CheckBox checkBoxSyncAura;
         private UI.RComboBox comboBoxAnimationSpeed;
@@ -1841,11 +1870,12 @@ namespace GHelper
         private Panel panelRight;
         private Panel panelGap;
         private TableLayoutPanel tableRoot;
-        private Label labelBinding0, labelBinding1, labelBinding2, labelBinding3, labelBinding4, labelBinding5, labelBinding6;
-        private GHelper.UI.RComboBox comboBinding0, comboBinding1, comboBinding2, comboBinding3, comboBinding4, comboBinding5, comboBinding6;
         private Panel panelBindingsHeader;
         private PictureBox pictureBindigs;
         private Label labelBindingsTitle;
+        private TableLayoutPanel tableBindingsNav;
+        private UI.RButton buttonBindingsNormal;
+        private UI.RButton buttonBindingsShift;
         private PictureBox pictureMouseLayout;
     }
 }
